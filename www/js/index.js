@@ -16,27 +16,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+const miles_km = 1.60934;
+
 var app = {
     // Application Constructor
-    initialize: function() {
+    initialize: function () {
         this.bindEvents();
     },
     // Bind Event Listeners
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
+    bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
+        $('#km').on('change', function () {
+            app.updateFromKm($('#km').val());
+        });
+        $('#miles').on('change', function () {
+            app.updateFromMiles($('#miles').val());
+        });
+        $('#miles-miles').on('change', function () {
+            app.updateFromMilesChains($('#miles-miles').val(), $('#miles-chains').val());
+        });
+        $('#miles-chains').on('change', function () {
+            app.updateFromMilesChains($('#miles-miles').val(), $('#miles-chains').val());
+        });
     },
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
+    onDeviceReady: function () {
         app.receivedEvent('deviceready');
     },
     // Update DOM on a Received Event
-    receivedEvent: function(id) {
+    receivedEvent: function (id) {
         var parentElement = document.getElementById(id);
         var listeningElement = parentElement.querySelector('.listening');
         var receivedElement = parentElement.querySelector('.received');
@@ -45,5 +59,19 @@ var app = {
         receivedElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
+    },
+    updateFromKm: function (km) {
+        $('#miles').val((km / miles_km).toFixed(3));
+        $('#miles-miles').val(Math.floor(km / miles_km));
+        $('#miles-chains').val((km % miles_km * 80 / miles_km).toFixed(3));
+    },
+    updateFromMiles: function (miles) {
+        $('#km').val((miles * miles_km).toFixed(3));
+        $('#miles-miles').val(Math.floor(miles));
+        $('#miles-chains').val((miles % 1 * 80).toFixed(3));
+    },
+    updateFromMilesChains: function (miles, chains) {
+        $('#km').val((miles * miles_km + chains / 80 * miles_km).toFixed(3));
+        $('#miles').val((miles * 1 + chains / 80).toFixed(3));
     }
 };
